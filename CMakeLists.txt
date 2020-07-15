@@ -9,8 +9,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(src)
 
-option(BOX2D_BUILD_UNIT_TESTS "Build the Box2D unit tests" ON)
-option(BOX2D_BUILD_TESTBED "Build the Box2D testbed" ON)
+option(BOX2D_BUILD_UNIT_TESTS "Build the Box2D unit tests" OFF)
+option(BOX2D_BUILD_TESTBED "Build the Box2D testbed" OFF)
 option(BOX2D_BUILD_DOCS "Build the Box2D documentation" OFF)
 
 if (BOX2D_BUILD_DOCS)
