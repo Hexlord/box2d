@@ -111,6 +111,19 @@ struct b2Vec2
 		return length;
 	}
 
+	/// Get this vector as a unit vector.
+	b2Vec2 Normalized()
+	{
+		float length = Length();
+		if (length < b2_epsilon)
+		{
+			return *this;
+		}
+		float invLength = 1.0f / length;
+
+		return b2Vec2{ x * invLength, y * invLength };
+	}
+
 	/// Does this vector contain finite coordinates?
 	bool IsValid() const
 	{

@@ -126,12 +126,16 @@ void b2CollidePolygons(b2Manifold* manifold,
 
 	int32 edgeA = 0;
 	float separationA = b2FindMaxSeparation(&edgeA, polyA, xfA, polyB, xfB);
-	if (separationA > totalRadius)
+	const bool ghostEdgeA = polyA->m_ghostEdges[edgeA];
+	if (separationA > totalRadius
+		|| ghostEdgeA)
 		return;
 
 	int32 edgeB = 0;
 	float separationB = b2FindMaxSeparation(&edgeB, polyB, xfB, polyA, xfA);
-	if (separationB > totalRadius)
+	const bool ghostEdgeB = polyB->m_ghostEdges[edgeB];
+	if (separationB > totalRadius
+		|| ghostEdgeB)
 		return;
 
 	const b2PolygonShape* poly1;	// reference polygon

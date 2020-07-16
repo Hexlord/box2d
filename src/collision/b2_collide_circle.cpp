@@ -70,21 +70,27 @@ void b2CollidePolygonAndCircle(
 	int32 vertexCount = polygonA->m_count;
 	const b2Vec2* vertices = polygonA->m_vertices;
 	const b2Vec2* normals = polygonA->m_normals;
+	const bool* ghostEdges = polygonA->m_ghostEdges;
 
 	for (int32 i = 0; i < vertexCount; ++i)
 	{
-		float s = b2Dot(normals[i], cLocal - vertices[i]);
-
-		if (s > radius)
+		b2Vec2 normal = normals[i];
+		const bool ghostEdge = ghostEdges[i];
+		if (!ghostEdge)
 		{
-			// Early out.
-			return;
-		}
+			float s = b2Dot(normal, cLocal - vertices[i]);
 
-		if (s > separation)
-		{
-			separation = s;
-			normalIndex = i;
+			if (s > radius)
+			{
+				// Early out.
+				return;
+			}
+
+			if (s > separation)
+			{
+				separation = s;
+				normalIndex = i;
+			}
 		}
 	}
 
