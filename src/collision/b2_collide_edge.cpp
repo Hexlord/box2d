@@ -397,9 +397,9 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 		manifold->type = b2Manifold::e_faceA;
 
 		// Search for the polygon normal that is most anti-parallel to the edge normal.
-		int32 bestIndex = -1;
-		float bestValue = FLT_MAX;
-		for (int32 i = 0; i < tempPolygonB.count; ++i)
+		int32 bestIndex = 0;
+		float bestValue = b2Dot(primaryAxis.normal, tempPolygonB.normals[0]);
+		for (int32 i = 1; i < tempPolygonB.count; ++i)
 		{
 			float value = b2Dot(primaryAxis.normal, tempPolygonB.normals[i]);
 			if (value < bestValue)
@@ -408,8 +408,6 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 				bestIndex = i;
 			}
 		}
-
-		b2Assert(bestIndex != -1);
 
 		int32 i1 = bestIndex;
 		int32 i2 = i1 + 1 < tempPolygonB.count ? i1 + 1 : 0;
