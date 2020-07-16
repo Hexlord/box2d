@@ -559,9 +559,9 @@ void b2PolygonShape::AssertCorrectVertices(const b2Vec2* vertices, int32 count)
 		b2Vec2 r = vertices[i] - vertices[i1];
 		b2Vec2 v = vertices[i1] - vertices[i2];
 		float c = b2Cross(r, v);
-		const bool Collinear = c == 0.0f;
-		const bool CW = c < 0.0f;
-		const bool ZeroLengthEdge = r.LengthSquared() < b2_epsilon * b2_epsilon;
-		b2Assert(!Collinear && !CW && !ZeroLengthEdge);
+		const bool collinear = c == 0.0f;
+		const bool clockwise = c < 0.0f;
+		const bool zeroLengthEdge = r.LengthSquared() < b2_epsilon * b2_epsilon;
+		b2Assert(!collinear && !clockwise && !zeroLengthEdge);
 	}
 }
