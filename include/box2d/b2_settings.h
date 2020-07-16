@@ -33,7 +33,7 @@
 #endif
 
 #define B2_NOT_USED(x) ((void)(x))
-#if DEBUG && !defined(NDEBUG)
+#ifdef b2DEBUG
 #define b2Assert(A) assert(A)
 #define B2_ASSERT_ENABLED 1
 #else
@@ -42,7 +42,7 @@
 #endif
 
 // Statement which is compiled out when DEBUG isn't defined.
-#if DEBUG
+#ifdef b2DEBUG
 #define B2_DEBUG_STATEMENT(A) A
 #else
 #define B2_DEBUG_STATEMENT(A)

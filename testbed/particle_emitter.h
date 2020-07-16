@@ -211,7 +211,7 @@ public:
 			const float angle = Random() * 2.0f * b2_pi;
 			// Distance from the center of the circle.
 			const float distance = Random();
-			b2Vec2 positionOnUnitCircle(sin(angle), cos(angle));
+			b2Vec2 positionOnUnitCircle(sinf(angle), cosf(angle));
 
 			// Initial position.
 			pd.position.Set(
