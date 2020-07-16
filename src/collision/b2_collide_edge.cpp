@@ -185,6 +185,7 @@ struct b2TempPolygon
 {
 	b2Vec2 vertices[b2_maxPolygonVertices];
 	b2Vec2 normals[b2_maxPolygonVertices];
+	bool ghostEdges[b2_maxPolygonVertices];
 	int32 count;
 };
 
@@ -267,8 +268,8 @@ static b2EPAxis b2ComputePolygonSeparation(const b2TempPolygon& polygonB, const 
 }
 
 void b2CollideEdgeAndPolygon(b2Manifold* manifold,
-							const b2EdgeShape* edgeA, const b2Transform& xfA,
-							const b2PolygonShape* polygonB, const b2Transform& xfB)
+	const b2EdgeShape* edgeA, const b2Transform& xfA,
+	const b2PolygonShape* polygonB, const b2Transform& xfB)
 {
 	manifold->pointCount = 0;
 
@@ -299,6 +300,7 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 	{
 		tempPolygonB.vertices[i] = b2Mul(xf, polygonB->m_vertices[i]);
 		tempPolygonB.normals[i] = b2Mul(xf.q, polygonB->m_normals[i]);
+		tempPolygonB.ghostEdges[i] = polygonB->m_ghostEdges[i];
 	}
 
 	float radius = polygonB->m_radius + edgeA->m_radius;
@@ -310,7 +312,9 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 	}
 
 	b2EPAxis polygonAxis = b2ComputePolygonSeparation(tempPolygonB, v1, v2);
-	if (polygonAxis.separation > radius)
+	const bool ghostEdgeB = polygonB->m_ghostEdges[polygonAxis.index];
+	if (polygonAxis.separation > radius
+		|| ghostEdgeB)
 	{
 		return;
 	}
@@ -393,9 +397,9 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 		manifold->type = b2Manifold::e_faceA;
 
 		// Search for the polygon normal that is most anti-parallel to the edge normal.
-		int32 bestIndex = 0;
-		float bestValue = b2Dot(primaryAxis.normal, tempPolygonB.normals[0]);
-		for (int32 i = 1; i < tempPolygonB.count; ++i)
+		int32 bestIndex = -1;
+		float bestValue = FLT_MAX;
+		for (int32 i = 0; i < tempPolygonB.count; ++i)
 		{
 			float value = b2Dot(primaryAxis.normal, tempPolygonB.normals[i]);
 			if (value < bestValue)
@@ -404,6 +408,8 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 				bestIndex = i;
 			}
 		}
+
+		b2Assert(bestIndex != -1);
 
 		int32 i1 = bestIndex;
 		int32 i2 = i1 + 1 < tempPolygonB.count ? i1 + 1 : 0;

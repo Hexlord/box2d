@@ -44,6 +44,10 @@ void b2PolygonShape::SetAsBox(float hx, float hy)
 	m_normals[1].Set(1.0f, 0.0f);
 	m_normals[2].Set(0.0f, 1.0f);
 	m_normals[3].Set(-1.0f, 0.0f);
+	m_ghostEdges[0] = false;
+	m_ghostEdges[1] = false;
+	m_ghostEdges[2] = false;
+	m_ghostEdges[3] = false;
 	m_centroid.SetZero();
 }
 
@@ -58,6 +62,10 @@ void b2PolygonShape::SetAsBox(float hx, float hy, const b2Vec2& center, float an
 	m_normals[1].Set(1.0f, 0.0f);
 	m_normals[2].Set(0.0f, 1.0f);
 	m_normals[3].Set(-1.0f, 0.0f);
+	m_ghostEdges[0] = false;
+	m_ghostEdges[1] = false;
+	m_ghostEdges[2] = false;
+	m_ghostEdges[3] = false;
 	m_centroid = center;
 
 	b2Transform xf;
@@ -241,10 +249,33 @@ void b2PolygonShape::Set(const b2Vec2* vertices, int32 count)
 		b2Assert(edge.LengthSquared() > b2_epsilon * b2_epsilon);
 		m_normals[i] = b2Cross(edge, 1.0f);
 		m_normals[i].Normalize();
+		m_ghostEdges[i] = false;
 	}
 
 	// Compute the polygon centroid.
 	m_centroid = ComputeCentroid(m_vertices, m);
+}
+
+void b2PolygonShape::Set(const b2Vec2* vertices, const b2Vec2* normals, const bool* ghostEdges, int32 count)
+{
+	b2Assert(3 <= count && count <= b2_maxPolygonVertices);
+
+	AssertCorrectVertices(vertices, count);
+
+	m_count = count;
+	
+	// Copy vertices and normals.
+	for (int32 i = 0; i < m_count; ++i)
+	{
+		m_vertices[i] = vertices[i];
+		
+		b2Assert(abs(normals[i].Length() - 1.0f) < b2_epsilon);
+		m_normals[i] = normals[i];
+		m_ghostEdges[i] = ghostEdges[i];
+	}
+
+	// Compute the polygon centroid.
+	m_centroid = ComputeCentroid(m_vertices, m_count);
 }
 
 bool b2PolygonShape::TestPoint(const b2Transform& xf, const b2Vec2& p) const
@@ -505,4 +536,32 @@ bool b2PolygonShape::Validate() const
 	}
 
 	return true;
+}
+
+void b2PolygonShape::AssertCorrectVertices(const b2Vec2* vertices, int32 count)
+{
+	int32 tempCount = 0;
+	for (int32 i = 0; i < count; ++i)
+	{
+		b2Vec2 v = vertices[i];
+		for (int32 j = 0; j < tempCount; ++j)
+		{
+			const bool verticesTooClose = b2DistanceSquared(v, vertices[j]) < ((0.5f * b2_linearSlop) * (0.5f * b2_linearSlop));
+			b2Assert(!verticesTooClose);
+		}
+		++tempCount;
+	}
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		int32 i1 = (i + 1) % count;
+		int32 i2 = (i + 2) % count;
+		b2Vec2 r = vertices[i] - vertices[i1];
+		b2Vec2 v = vertices[i1] - vertices[i2];
+		float c = b2Cross(r, v);
+		const bool Collinear = c == 0.0f;
+		const bool CW = c < 0.0f;
+		const bool ZeroLengthEdge = r.LengthSquared() < b2_epsilon * b2_epsilon;
+		b2Assert(!Collinear && !CW && !ZeroLengthEdge);
+	}
 }

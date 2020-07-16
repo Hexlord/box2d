@@ -43,7 +43,7 @@ public:
 		{
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
-			bd.position.Set(-15.0f, 1.0f);
+			bd.position.Set(-25.0f, 1.0f);
 			m_table1 = m_world->CreateBody(&bd);
 
 			b2PolygonShape top;
@@ -54,7 +54,7 @@ public:
 
 			b2PolygonShape rightLeg;
 			rightLeg.SetAsBox(0.5f, 1.5f, b2Vec2(2.5f, 1.5f), 0.0f);
-
+			
 			m_table1->CreateFixture(&top, 2.0f);
 			m_table1->CreateFixture(&leftLeg, 2.0f);
 			m_table1->CreateFixture(&rightLeg, 2.0f);
@@ -64,7 +64,7 @@ public:
 		{
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
-			bd.position.Set(-5.0f, 1.0f);
+			bd.position.Set(-15.0f, 1.0f);
 			m_table2 = m_world->CreateBody(&bd);
 
 			b2PolygonShape top;
@@ -75,10 +75,94 @@ public:
 
 			b2PolygonShape rightLeg;
 			rightLeg.SetAsBox(0.5f, 2.0f, b2Vec2(2.5f, 2.0f), 0.0f);
-
+			
 			m_table2->CreateFixture(&top, 2.0f);
 			m_table2->CreateFixture(&leftLeg, 2.0f);
 			m_table2->CreateFixture(&rightLeg, 2.0f);
+		}
+
+		// Table 3
+		{
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+			bd.position.Set(-5.0f, 1.0f);
+			m_table3 = m_world->CreateBody(&bd);
+
+			b2Vec2 topVertices[] = {
+				b2Vec2{-3.0f, 0.5f  + 3.5f},
+				b2Vec2{-3.0f, -0.5f + 3.5f},
+				b2Vec2{3.0f, -0.5f  + 3.5f},
+				b2Vec2{3.0f, 0.5f   + 3.5f},
+			};
+
+			b2Vec2 topNormals[] = {
+				b2Vec2{-1.0f, 0.0f},
+				b2Vec2{0.0f, -1.0f},
+				b2Vec2{1.0f, 0.0f},
+				b2Vec2{0.0f, 1.0f},
+			};
+
+			bool topGhostEdges[] = {
+				false,
+				false,
+				false,
+				false,
+			};
+
+			b2PolygonShape top;
+			top.Set(topVertices, topNormals, topGhostEdges, 4);
+
+			b2Vec2 leftVertices[] = {
+				b2Vec2{-0.5f - 2.5f, 1.5f  + 1.5f},
+				b2Vec2{-0.5f - 2.5f, -1.5f + 1.5f},
+				b2Vec2{0.5f  - 2.5f, -1.5f + 1.5f},
+				b2Vec2{0.5f  - 2.5f, 1.5f  + 1.5f},
+			};
+
+			b2Vec2 leftNormals[] = {
+				b2Vec2{-1.0f, 0.0f},
+				b2Vec2{0.0f, -1.0f},
+				b2Vec2{1.0f, 0.0f},
+				b2Vec2{0.0f, 1.0f}, // shared with top
+			};
+
+			bool leftGhostEdges[] = {
+				false,
+				false,
+				false,
+				true,
+			};
+
+			b2PolygonShape leftLeg;
+			leftLeg.Set(leftVertices, leftNormals, leftGhostEdges, 4);
+
+			b2Vec2 rightVertices[] = {
+				b2Vec2{-0.5f + 2.5f, 1.5f + 1.5f},
+				b2Vec2{-0.5f + 2.5f, -1.5f + 1.5f},
+				b2Vec2{0.5f  + 2.5f, -1.5f + 1.5f},
+				b2Vec2{0.5f  + 2.5f, 1.5f + 1.5f},
+			};
+
+			b2Vec2 rightNormals[] = {
+				b2Vec2{-1.0f, 0.0f},
+				b2Vec2{0.0f, -1.0f},
+				b2Vec2{1.0f, 0.0f},
+				b2Vec2{0.0f, 1.0f}, // shared with top
+			};
+
+			bool rightGhostEdges[] = {
+				false,
+				false,
+				false,
+				true,
+			};
+			
+			b2PolygonShape rightLeg;
+			rightLeg.Set(rightVertices, rightNormals, rightGhostEdges, 4);
+
+			m_table3->CreateFixture(&top, 2.0f);
+			m_table3->CreateFixture(&leftLeg, 2.0f);
+			m_table3->CreateFixture(&rightLeg, 2.0f);
 		}
 
 		// Spaceship 1
@@ -101,7 +185,7 @@ public:
 			vertices[1].Set(0.0f, 4.0f / 3.0f);
 			vertices[2].Set(0.0f, 4.0f);
 			right.Set(vertices, 3);
-
+			
 			m_ship1->CreateFixture(&left, 2.0f);
 			m_ship1->CreateFixture(&right, 2.0f);
 		}
@@ -130,63 +214,96 @@ public:
 			m_ship2->CreateFixture(&left, 2.0f);
 			m_ship2->CreateFixture(&right, 2.0f);
 		}
+
+		// Spaceship 3
+		{
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+			bd.position.Set(25.0f, 1.0f);
+			m_ship3 = m_world->CreateBody(&bd);
+
+			b2Vec2 leftVertices[] = {
+				b2Vec2{0.0f, 4.0f / 3.0f},
+				b2Vec2{0.0f, 4.0f},
+				b2Vec2{-2.0f, 0.0f},
+			};
+
+			b2Vec2 leftNormals[] = {
+				b2Cross(leftVertices[1] - leftVertices[0], 1.0f).Normalized(),
+				b2Cross(leftVertices[2] - leftVertices[1], 1.0f).Normalized(),
+				b2Cross(leftVertices[0] - leftVertices[2], 1.0f).Normalized(),
+			};
+
+			bool leftGhostEdges[] = {
+				false,
+				false,
+				false,
+			};
+
+			b2PolygonShape left;
+			left.Set(leftVertices, leftNormals, leftGhostEdges, 3);
+
+			b2Vec2 rightVertices[] = {
+				b2Vec2{2.0f, 0.0f},
+				b2Vec2{0.0f, 4.0f},
+				b2Vec2{0.0f, 4.0f / 3.0f},
+			};
+
+			b2Vec2 rightNormals[] = {
+				b2Cross(rightVertices[1] - rightVertices[0], 1.0f).Normalized(),
+				b2Cross(rightVertices[2] - rightVertices[1], 1.0f).Normalized(),
+				b2Cross(rightVertices[0] - rightVertices[2], 1.0f).Normalized(),
+			};
+
+			bool rightGhostEdges[] = {
+				false,
+				true,
+				false,
+			};
+
+			b2PolygonShape right;
+			right.Set(rightVertices, rightNormals, rightGhostEdges, 3);
+
+			m_ship3->CreateFixture(&left, 2.0f);
+			m_ship3->CreateFixture(&right, 2.0f);
+		}
 	}
 
 	void Spawn()
 	{
-		// Table 1 obstruction
+		b2Body* tables[] = {
+			m_table1,
+			m_table2,
+			m_table3,
+		};
+
+		for(b2Body* table : tables)
 		{
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
-			bd.position = m_table1->GetPosition();
-			bd.angle = m_table1->GetAngle();
+			bd.position = table->GetPosition();
+			bd.angle = table->GetAngle();
 
 			b2Body* body = m_world->CreateBody(&bd);
 
 			b2PolygonShape box;
 			box.SetAsBox(4.0f, 0.1f, b2Vec2(0.0f, 3.0f), 0.0f);
-			
+
 			body->CreateFixture(&box, 2.0f);
 		}
 
-		// Table 2 obstruction
+		b2Body* ships[] = {
+			m_ship1,
+			m_ship2,
+			m_ship3,
+		};
+		
+		for (b2Body* ship : ships)
 		{
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
-			bd.position = m_table2->GetPosition();
-			bd.angle = m_table2->GetAngle();
-
-			b2Body* body = m_world->CreateBody(&bd);
-
-			b2PolygonShape box;
-			box.SetAsBox(4.0f, 0.1f, b2Vec2(0.0f, 3.0f), 0.0f);
-			
-			body->CreateFixture(&box, 2.0f);
-		}
-
-		// Ship 1 obstruction
-		{
-			b2BodyDef bd;
-			bd.type = b2_dynamicBody;
-			bd.position = m_ship1->GetPosition();
-			bd.angle = m_ship1->GetAngle();
-			bd.gravityScale = 0.0f;
-
-			b2Body* body = m_world->CreateBody(&bd);
-
-			b2CircleShape circle;
-			circle.m_radius = 0.5f;
-			circle.m_p.Set(0.0f, 2.0f);
-
-			body->CreateFixture(&circle, 2.0f);
-		}
-
-		// Ship 2 obstruction
-		{
-			b2BodyDef bd;
-			bd.type = b2_dynamicBody;
-			bd.position = m_ship2->GetPosition();
-			bd.angle = m_ship2->GetAngle();
+			bd.position = ship->GetPosition();
+			bd.angle = ship->GetAngle();
 			bd.gravityScale = 0.0f;
 
 			b2Body* body = m_world->CreateBody(&bd);
@@ -220,8 +337,10 @@ public:
 
 	b2Body* m_table1;
 	b2Body* m_table2;
+	b2Body* m_table3;
 	b2Body* m_ship1;
 	b2Body* m_ship2;
+	b2Body* m_ship3;
 };
 
 static int testIndex = RegisterTest("Examples", "Compound Shapes", CompoundShapes::Create);

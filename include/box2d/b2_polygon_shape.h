@@ -44,7 +44,13 @@ public:
 	/// @warning the points may be re-ordered, even if they form a convex polygon
 	/// @warning collinear points are handled but not removed. Collinear points
 	/// may lead to poor stacking behavior.
-	void Set(const b2Vec2* points, int32 count);
+	void Set(const b2Vec2* vertices, int32 count);
+	/// Create a polygon from the given array of valid points.
+	/// The count must be in the range [3, b2_maxPolygonVertices].
+	/// @param vertices vertices which describe a convex polygon.
+	/// @param normal normals which describe a convex polygon.
+	/// @param ghostEdge which edges are to be considered ghost, disabling their collision.
+	void Set(const b2Vec2* vertices, const b2Vec2* normals, const bool* ghostEdges, int32 count);
 
 	/// Build vertices to represent an axis-aligned box centered on the local origin.
 	/// @param hx the half-width.
@@ -83,7 +89,13 @@ public:
 	b2Vec2 m_centroid;
 	b2Vec2 m_vertices[b2_maxPolygonVertices];
 	b2Vec2 m_normals[b2_maxPolygonVertices];
+	bool m_ghostEdges[b2_maxPolygonVertices];
 	int32 m_count;
+
+private:
+
+	void AssertCorrectVertices(const b2Vec2* vertices, int32 count);
+	
 };
 
 inline b2PolygonShape::b2PolygonShape()
