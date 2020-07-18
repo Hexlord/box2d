@@ -269,7 +269,7 @@ void b2PolygonShape::Set(const b2Vec2* vertices, const b2Vec2* normals, const bo
 	{
 		m_vertices[i] = vertices[i];
 		
-		b2Assert(abs(normals[i].Length() - 1.0f) < b2_epsilon);
+		b2Assert(abs(normals[i].Length() - 1.0f) < b2_linearSlop);
 		m_normals[i] = normals[i];
 		m_ghostEdges[i] = ghostEdges[i];
 	}

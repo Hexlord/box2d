@@ -201,7 +201,7 @@ b2Fixture* b2Body::CreateFixture(const b2FixtureDef* def)
 	return fixture;
 }
 
-void b2Body::CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, int32 count)
+void b2Body::CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, int32 stride, int32 count)
 {
 	b2Assert(m_world->IsLocked() == false);
 
@@ -214,7 +214,7 @@ void b2Body::CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, i
 	{		
 		void* memory = allocator->Allocate(sizeof(b2Fixture));
 		b2Fixture* fixture = new (memory) b2Fixture;
-		d.shape = shapeList + i;
+		d.shape = reinterpret_cast<const b2Shape*>(reinterpret_cast<const char*>(shapeList) + stride);
 		fixture->Create(allocator, this, &d);
 
 		b2Assert(m_flags & e_enabledFlag);
