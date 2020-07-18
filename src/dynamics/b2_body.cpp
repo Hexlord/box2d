@@ -201,6 +201,37 @@ b2Fixture* b2Body::CreateFixture(const b2FixtureDef* def)
 	return fixture;
 }
 
+void b2Body::CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, int32 count)
+{
+	b2Assert(m_world->IsLocked() == false);
+
+	b2BlockAllocator* allocator = &m_world->m_blockAllocator;
+	b2BroadPhase* broadPhase = &m_world->m_contactManager.m_broadPhase;
+
+	b2FixtureDef d = *def;
+	
+	for(int32 i = 0; i != count; ++i)
+	{		
+		void* memory = allocator->Allocate(sizeof(b2Fixture));
+		b2Fixture* fixture = new (memory) b2Fixture;
+		d.shape = shapeList + i;
+		fixture->Create(allocator, this, &d);
+
+		b2Assert(m_flags & e_enabledFlag);
+		fixture->CreateProxies(broadPhase, m_xf);
+
+		fixture->m_next = m_fixtureList;
+		m_fixtureList = fixture;
+
+		b2Assert(fixture->m_density > 0.0f);		
+	}
+
+	ResetMassData();
+	
+	m_world->m_newContacts = true;
+	m_fixtureCount += count;
+}
+
 b2Fixture* b2Body::CreateFixture(const b2Shape* shape, float density)
 {
 	b2FixtureDef def;

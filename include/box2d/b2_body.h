@@ -139,6 +139,7 @@ public:
 	/// @param def the fixture definition.
 	/// @warning This function is locked during callbacks.
 	b2Fixture* CreateFixture(const b2FixtureDef* def);
+	void CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, int32 count);
 
 	/// Creates a fixture from a shape and attach it to this body.
 	/// This is a convenience function. Use b2FixtureDef if you need to set parameters
