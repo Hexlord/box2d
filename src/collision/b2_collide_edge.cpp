@@ -249,18 +249,23 @@ static b2EPAxis b2ComputePolygonSeparation(const b2TempPolygon& polygonB, const 
 
 	for (int32 i = 0; i < polygonB.count; ++i)
 	{
-		b2Vec2 n = -polygonB.normals[i];
+		const bool ghostEdgeB = polygonB.ghostEdges[i];
 
-		float s1 = b2Dot(n, polygonB.vertices[i] - v1);
-		float s2 = b2Dot(n, polygonB.vertices[i] - v2);
-		float s = b2Min(s1, s2);
-
-		if (s > axis.separation)
+		if (!ghostEdgeB)
 		{
-			axis.type = b2EPAxis::e_edgeB;
-			axis.index = i;
-			axis.separation = s;
-			axis.normal = n;
+			b2Vec2 n = -polygonB.normals[i];
+
+			float s1 = b2Dot(n, polygonB.vertices[i] - v1);
+			float s2 = b2Dot(n, polygonB.vertices[i] - v2);
+			float s = b2Min(s1, s2);
+
+			if (s > axis.separation)
+			{
+				axis.type = b2EPAxis::e_edgeB;
+				axis.index = i;
+				axis.separation = s;
+				axis.normal = n;
+			}
 		}
 	}
 
@@ -312,9 +317,7 @@ void b2CollideEdgeAndPolygon(b2Manifold* manifold,
 	}
 
 	b2EPAxis polygonAxis = b2ComputePolygonSeparation(tempPolygonB, v1, v2);
-	const bool ghostEdgeB = polygonB->m_ghostEdges[polygonAxis.index];
-	if (polygonAxis.separation > radius
-		|| ghostEdgeB)
+	if (polygonAxis.separation > radius)
 	{
 		return;
 	}

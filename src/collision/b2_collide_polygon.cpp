@@ -39,25 +39,30 @@ static float b2FindMaxSeparation(int32* edgeIndex,
 	float maxSeparation = -b2_maxFloat;
 	for (int32 i = 0; i < count1; ++i)
 	{
-		// Get poly1 normal in frame2.
-		b2Vec2 n = b2Mul(xf.q, n1s[i]);
-		b2Vec2 v1 = b2Mul(xf, v1s[i]);
+		const bool ghostEdgeA = poly1->m_ghostEdges[i];
 
-		// Find deepest point for normal i.
-		float si = b2_maxFloat;
-		for (int32 j = 0; j < count2; ++j)
+		if (!ghostEdgeA)
 		{
-			float sij = b2Dot(n, v2s[j] - v1);
-			if (sij < si)
+			// Get poly1 normal in frame2.
+			b2Vec2 n = b2Mul(xf.q, n1s[i]);
+			b2Vec2 v1 = b2Mul(xf, v1s[i]);
+
+			// Find deepest point for normal i.
+			float si = b2_maxFloat;
+			for (int32 j = 0; j < count2; ++j)
 			{
-				si = sij;
+				float sij = b2Dot(n, v2s[j] - v1);
+				if (sij < si)
+				{
+					si = sij;
+				}
 			}
-		}
 
-		if (si > maxSeparation)
-		{
-			maxSeparation = si;
-			bestIndex = i;
+			if (si > maxSeparation)
+			{
+				maxSeparation = si;
+				bestIndex = i;
+			}
 		}
 	}
 
@@ -85,11 +90,16 @@ static void b2FindIncidentEdge(b2ClipVertex c[2],
 	float minDot = b2_maxFloat;
 	for (int32 i = 0; i < count2; ++i)
 	{
-		float dot = b2Dot(normal1, normals2[i]);
-		if (dot < minDot)
+		const bool ghostEdge2 = poly2->m_ghostEdges[i];
+
+		if (!ghostEdge2)
 		{
-			minDot = dot;
-			index = i;
+			float dot = b2Dot(normal1, normals2[i]);
+			if (dot < minDot)
+			{
+				minDot = dot;
+				index = i;
+			}
 		}
 	}
 
@@ -126,16 +136,12 @@ void b2CollidePolygons(b2Manifold* manifold,
 
 	int32 edgeA = 0;
 	float separationA = b2FindMaxSeparation(&edgeA, polyA, xfA, polyB, xfB);
-	const bool ghostEdgeA = polyA->m_ghostEdges[edgeA];
-	if (separationA > totalRadius
-		|| ghostEdgeA)
+	if (separationA > totalRadius)
 		return;
 
 	int32 edgeB = 0;
 	float separationB = b2FindMaxSeparation(&edgeB, polyB, xfB, polyA, xfA);
-	const bool ghostEdgeB = polyB->m_ghostEdges[edgeB];
-	if (separationB > totalRadius
-		|| ghostEdgeB)
+	if (separationB > totalRadius)
 		return;
 
 	const b2PolygonShape* poly1;	// reference polygon
