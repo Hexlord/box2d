@@ -214,7 +214,7 @@ void b2Body::CreateFixtures(const b2FixtureDef* def, const b2Shape* shapeList, i
 	{		
 		void* memory = allocator->Allocate(sizeof(b2Fixture));
 		b2Fixture* fixture = new (memory) b2Fixture;
-		d.shape = reinterpret_cast<const b2Shape*>(reinterpret_cast<const char*>(shapeList) + stride);
+		d.shape = reinterpret_cast<const b2Shape*>(reinterpret_cast<const char*>(shapeList) + stride * i);
 		fixture->Create(allocator, this, &d);
 
 		b2Assert(m_flags & e_enabledFlag);
