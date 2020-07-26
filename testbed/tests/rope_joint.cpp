@@ -30,6 +30,9 @@
 /// densities, time step, and iterations to see how they affect stability.
 /// This test also shows how to use contact filtering. Filtering is configured
 /// so that the payload does not collide with the chain.
+
+static float MaxPressure = 0.0f;
+
 class RopeJoint : public Test
 {
 public:
@@ -115,6 +118,7 @@ public:
 			else
 			{
 				m_rope = m_world->CreateJoint(&m_ropeDef);
+				MaxPressure = 0.0f;
 			}
 			break;
 		}
@@ -128,12 +132,27 @@ public:
 		if (m_rope)
 		{
 			g_debugDraw.DrawString(5, m_textLine, "Rope ON");
+			m_textLine += m_textIncrement;
+
+			float Pressure = m_rope->GetReactionForce(1.0f).Length();
+			g_debugDraw.DrawString(5, m_textLine, "%f", Pressure);
+			m_textLine += m_textIncrement;
+			MaxPressure = b2Max(MaxPressure, Pressure);
+			g_debugDraw.DrawString(5, m_textLine, "%f", MaxPressure);
+
+			if (Pressure > 12000.0f)
+			{
+				m_world->DestroyJoint(m_rope);
+				m_rope = NULL;
+			}
 		}
 		else
 		{
 			g_debugDraw.DrawString(5, m_textLine, "Rope OFF");
 		}
 		m_textLine += m_textIncrement;
+
+
 	}
 
 	static Test* Create()
