@@ -2731,8 +2731,6 @@ void b2ParticleSystem::RemoveSpuriousBodyContacts()
 
 	int32 discarded = 0;
 	m_bodyContactBuffer.RemoveIf(b2ParticleBodyContactRemovePredicate(this, &discarded));
-
-	m_bodyContactBuffer.SetCount(m_bodyContactBuffer.GetCount() - discarded);
 }
 
 bool b2ParticleSystem::BodyContactCompare(const b2ParticleBodyContact &lhs,
