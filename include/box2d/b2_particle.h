@@ -92,7 +92,7 @@ public:
 
 	/// Constructor that initializes the above four elements with the value of
 	/// the b2Color object.
-	b2ParticleColor(const b2Color& color);
+    b2ParticleColor(const b2Color& color);
 
 	/// True when all four color elements equal 0. When true, a particle color
 	/// buffer isn't allocated by CreateParticle().
@@ -119,13 +119,6 @@ public:
 	/// Initializes the object with the value of the b2Color.
 	///
 	void Set(const b2Color& color);
-
-	/// Assign a b2ParticleColor to this instance.
-	b2ParticleColor& operator = (const b2ParticleColor &color)
-	{
-		Set(color.r, color.g, color.b, color.a);
-		return *this;
-	}
 
 	/// Multiplies r, g, b, a members by s where s is a value between 0.0
 	/// and 1.0.
