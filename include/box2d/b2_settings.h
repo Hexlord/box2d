@@ -51,6 +51,7 @@
 // Calculate the size of a static array.
 #define B2_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
+#ifndef A1_STANDARDTYPES_GUARD
 typedef signed char	int8;
 typedef signed short int16;
 typedef signed int int32;
@@ -64,6 +65,7 @@ typedef unsigned __int64   uint64;
 #else // !WIN32
 typedef long long int64;
 typedef unsigned long long uint64;
+#endif
 #endif
 
 constexpr float b2_maxFloat = FLT_MAX;
