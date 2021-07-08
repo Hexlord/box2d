@@ -6,7 +6,6 @@ file(GLOB_RECURSE BOX2D_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/../include/box2d/*.h"
 )
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${A1_COOKED_BUILD}")
 add_library(box2d SHARED ${BOX2D_SOURCE_FILES} ${BOX2D_HEADER_FILES})
 target_include_directories(box2d PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_include_directories(box2d PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
